@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+    types: [closed]
   push:
     branches:
       - main
@@ -44,7 +45,8 @@ jobs:
 
   release:
     needs: tests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
     runs-on: ubuntu-latest
 
     steps:
@@ -107,3 +109,4 @@ jobs:
         run: |
           poetry config repositories.test-pypi https://test.pypi.org/legacy/
           poetry publish -r test-pypi -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }}
+
